@@ -16,11 +16,10 @@ class IPValidationMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        logger($request->ip());
-        // $allowed_ips = ['127.0.0.1'];
-        // if (!in_array($request->ip(), $allowed_ips)) {
-        //     return response()->json(['error' => 'Unauthorized IP'], 403);
-        // }
+        $allowed_ips = ['127.0.0.1'];
+        if (!in_array($request->ip(), $allowed_ips)) {
+            return response()->json(['error' => 'Unauthorized IP'], 403);
+        }
         return $next($request);
     }
 }

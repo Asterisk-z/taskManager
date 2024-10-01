@@ -7,6 +7,7 @@ import { onMounted, ref, shallowRef } from 'vue';
 
 
 const taskList = shallowRef([]);
+const seconds = shallowRef(0);
 const fetchTasks = async (is_completed = false) => {
     let query = is_completed ? 'is_completed=true' : ''
     await axios.get(`/api/tasks?${query}`).then((response) => {
@@ -19,17 +20,15 @@ onMounted(() => {
 
     fetchTasks()
 
-    // console.log(updateTimeTaken(28))
+    // updateTimeTaken(0)
 
 })
 
 const updateTask = async (task, is_completed = false) => {
-    console.log(task)
-
     let completed = is_completed ? is_completed : task.is_completed;
 
     await axios.put(`/api/tasks/${task.id}`, {
-        'is_completed': completed, 'time_taken': task.time_taken
+        'is_completed': completed, 'time_taken': task.time_taken + seconds.value
     }).then((response) => {
         taskList.value = response.data
     }).catch((error) => {
@@ -37,17 +36,17 @@ const updateTask = async (task, is_completed = false) => {
     });
 };
 
-const updateTimeTaken = (task) => {
-    if (task.is_completed) {
-        return task.time_taken
-    }
+
+const updateTimeTaken = (task_id) => {
+    // if (task.is_completed) {
+    //     return task.time_taken
+    // }
     // setInterval(() => {
-    //     console.log('sdsd')
-    //     task.time_taken = task.time_taken + 1
-    //     updateTimeTaken(task)
+    //     seconds.value = time + 1
+    //     updateTimeTaken(seconds.value)
 
     // }, 1000)
-    return task.time_taken
+    // return seconds.value
 };
 const filterData = async (e) => fetchTasks(e.target.checked);
 
@@ -83,8 +82,8 @@ const filterData = async (e) => fetchTasks(e.target.checked);
                                 v-for="(task, index) in taskList" v-bind:key="index">
                                 <p class="text-sm leading-6 text-gray-900">
                                     <strong class="font-semibold">{{ task.title }}</strong> - <span> Time taken {{
-                                        updateTimeTaken(task)
-                                        }}</span>
+                                        updateTimeTaken(task.time_taken)
+                                    }}</span>
                                 </p>
                                 <a href="#" v-if="!task.is_completed" @click.prevent="updateTask(task, true)"
                                     class="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">Completed</a>
